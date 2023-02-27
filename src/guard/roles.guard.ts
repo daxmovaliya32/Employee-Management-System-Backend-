@@ -2,7 +2,7 @@ import { Injectable, CanActivate, ExecutionContext} from '@nestjs/common';
 import { UnauthorizedException } from '@nestjs/common/exceptions/unauthorized.exception';
 import { JwtService } from '@nestjs/jwt';
 
-
+// guard for admin
 @Injectable()
 export class RolesGuardadmin implements CanActivate {
   constructor(private readonly jwtService:JwtService) {}
@@ -30,6 +30,7 @@ export class RolesGuardadmin implements CanActivate {
   }
 }
 
+// guard for user
 @Injectable()
 export class RolesGuarduser implements CanActivate {
   constructor(private readonly jwtService:JwtService) {}
@@ -56,26 +57,139 @@ export class RolesGuarduser implements CanActivate {
   }
 }
 
-// @Injectable()
-// export class RolesGuardforadminanduser implements CanActivate {
-//   constructor(private readonly jwtService:JwtService) {}
+// guard for member
+export class RolesGuardMember implements CanActivate {
+  constructor(private readonly jwtService:JwtService) {}
 
-//   canActivate(context: ExecutionContext):boolean{ 
-//     const request = context.switchToHttp().getRequest();
-//     const token = request.headers.token;
-//         if(!token)
-//         {
-//             throw new UnauthorizedException('token is not provided');
-//         }
-//     try {
-//         const user = this.jwtService.verify(token) 
-//         if(user.role =="User" || user.role =="Admin")
-//         {
-//           request.user=user
-//             return true;
-//         }
-//     } catch (error) {
-//         throw new UnauthorizedException(error.response);  
-//     }
-//   }
-// }
+  canActivate(context: ExecutionContext):boolean{
+    try {
+      const request = context.switchToHttp().getRequest();
+      const token = request.headers.token;
+      if(!token)
+      {
+          throw new UnauthorizedException('token is not provided');
+      } 
+        const user = this.jwtService.verify(token)
+        request.user=user
+        console.log(user.role);
+        if(user.role=="Member")
+        {
+          return true;
+        }else{
+          throw new UnauthorizedException('only Member can perform this action');
+        }
+    } catch (error) {
+        throw new UnauthorizedException(error.response);  
+    }
+  }
+}
+
+// guard for teammanager
+export class RolesGuardTeamManager implements CanActivate {
+  constructor(private readonly jwtService:JwtService) {}
+
+  canActivate(context: ExecutionContext):boolean{
+    try {
+      const request = context.switchToHttp().getRequest();
+      const token = request.headers.token;
+      if(!token)
+      {
+          throw new UnauthorizedException('token is not provided');
+      } 
+        const user = this.jwtService.verify(token)
+        request.user=user
+        console.log(user.role);
+        if(user.role=="Team_Manager")
+        {
+          return true;
+        }else{
+          throw new UnauthorizedException('only Team_Manager can perform this action');
+        }
+    } catch (error) {
+        throw new UnauthorizedException(error.response);  
+    }
+  }
+}
+
+// guard for project manager
+export class RolesGuardProjectManager implements CanActivate {
+  constructor(private readonly jwtService:JwtService) {}
+
+  canActivate(context: ExecutionContext):boolean{
+    try {
+      const request = context.switchToHttp().getRequest();
+      const token = request.headers.token;
+      if(!token)
+      {
+          throw new UnauthorizedException('token is not provided');
+      } 
+        const user = this.jwtService.verify(token)
+        request.user=user
+        console.log(user.role);
+        if(user.role=="Project_Manager")
+        {
+          return true;
+        }else{
+          throw new UnauthorizedException('only Project_Manager can perform this action');
+        }
+    } catch (error) {
+        throw new UnauthorizedException(error.response);  
+    }
+  }
+}
+
+// guard for taskmanager
+export class RolesGuardTaskManager implements CanActivate {
+  constructor(private readonly jwtService:JwtService) {}
+
+  canActivate(context: ExecutionContext):boolean{
+    try {
+      const request = context.switchToHttp().getRequest();
+      const token = request.headers.token;
+      if(!token)
+      {
+          throw new UnauthorizedException('token is not provided');
+      } 
+        const user = this.jwtService.verify(token)
+        request.user=user
+        console.log(user.role);
+        if(user.role=="Task_Manager")
+        {
+          return true;
+        }else{
+          throw new UnauthorizedException('only Task_Manager can perform this action');
+        }
+    } catch (error) {
+        throw new UnauthorizedException(error.response);  
+    }
+  }
+}
+
+// guard for department manager
+export class RolesGuardDepartmentManager implements CanActivate {
+  constructor(private readonly jwtService:JwtService) {}
+
+  canActivate(context: ExecutionContext):boolean{
+    try {
+      const request = context.switchToHttp().getRequest();
+      const token = request.headers.token;
+      if(!token)
+      {
+          throw new UnauthorizedException('token is not provided');
+      } 
+        const user = this.jwtService.verify(token)
+        request.user=user
+        console.log(user.role);
+        if(user.role=="Department_Manager")
+        {
+          return true;
+        }else{
+          throw new UnauthorizedException('only Department_Manager can perform this action');
+        }
+    } catch (error) {
+        throw new UnauthorizedException(error.response);  
+    }
+  }
+}
+
+

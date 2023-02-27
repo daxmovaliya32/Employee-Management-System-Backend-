@@ -28,7 +28,7 @@ export class address {
 export type OrganizationDocument = Organization & Document;
 @Schema({ timestamps: true, collection: 'Organization' })
 export class Organization {
-  @Prop({type:mongoose.Schema.Types.ObjectId,ref:"users"})
+  @Prop({type:mongoose.Schema.Types.ObjectId,ref:"User"})
   user:User;
 
   @Prop()
@@ -55,7 +55,7 @@ export class Organization {
   @Prop({ default: 1 })
   status: boolean;
 
-  @Prop({ default: false })
+  @Prop({ default: true })
   isActive: boolean;
 
 }

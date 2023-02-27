@@ -10,27 +10,31 @@ import { User } from './user.interface';
 export type GoalDocument = Goal & Document;
 @Schema({ timestamps: true, collection: 'Goal' })
 export class Goal {
-  @Prop({type:mongoose.Schema.Types.ObjectId,ref:"users"})
-  @IsNotEmpty()
+  @Prop({type:mongoose.Schema.Types.ObjectId,ref:"User"})
   user:User;
 
   @Prop()
   @IsNotEmpty()
   name: string;
 
-  @Prop({type:mongoose.Schema.Types.ObjectId,ref:"users"})
+  @Prop({type:mongoose.Schema.Types.ObjectId,ref:"User"})
+  @IsNotEmpty()
   goal_manager:User;
 
-  @Prop({type:mongoose.Schema.Types.ObjectId,ref:"users"})
-  goal_members:User;
+  @Prop([{type:mongoose.Schema.Types.ObjectId,ref:"User"}])
+  @IsNotEmpty()
+  goal_members:User[];
 
   @Prop({type:mongoose.Schema.Types.ObjectId,ref:"Organization"})
+  @IsNotEmpty()
   org_id:Organization;
 
   @Prop()
+  @IsNotEmpty()
   desc: string;
 
   @Prop()
+  @IsNotEmpty()
   progress:string;
 
   @Prop({ type: String })

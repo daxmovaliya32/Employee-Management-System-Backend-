@@ -1,8 +1,8 @@
 import { Controller, Patch} from '@nestjs/common';
 import { Body, Post } from '@nestjs/common';
 import { FormDataRequest } from 'nestjs-form-data';
-import { User } from 'src/models/user.interface';
-import { authUser, verifydto } from 'src/user/user.dto';
+import { Member } from 'src/models/Member.interface';
+import { authMember, verifydto } from 'src/members/member.dto';
 import { emailforsendotp, forgotpassword, verifingotp} from './auth.dto';
 import { AuthService } from './auth.service';
 
@@ -12,14 +12,14 @@ export class authController {
 
     @Post('signin')
     @FormDataRequest()
-    async loginuser(@Body() userdto:authUser) {
-        return this.Authservice.signinuser(userdto.email,userdto.password);
+    async loginMember(@Body() Memberdto:authMember) {
+        return this.Authservice.signinMember(Memberdto.email,Memberdto.password);
     }
 
     @Post('signup')
     @FormDataRequest()
-    async regUser(@Body() userdto:User) {
-        return this.Authservice.signupuser(userdto);
+    async regMember(@Body() Memberdto:Member) {
+        return this.Authservice.signupMember(Memberdto);
         
     }
 
@@ -31,20 +31,20 @@ export class authController {
 
     @Post('/email')
     @FormDataRequest()
-    async emailforforgotpassword(@Body() userdto:emailforsendotp) {
-        return this.Authservice.findemailandsaveotp(userdto);
+    async emailforforgotpassword(@Body() Memberdto:emailforsendotp) {
+        return this.Authservice.findemailandsaveotp(Memberdto);
     }
 
     @Post('/email/verify')
     @FormDataRequest()
-    async verifyotpforforgotpassword(@Body() userdto:verifingotp) {
-        return this.Authservice.otpverificationforforgotpassword(userdto);
+    async verifyotpforforgotpassword(@Body() Memberdto:verifingotp) {
+        return this.Authservice.otpverificationforforgotpassword(Memberdto);
     }
 
     @Post('/email/verify/forgotpassword')
     @FormDataRequest()
-    async changepass(@Body() userdto:forgotpassword) {
-        console.log(userdto);
-        return this.Authservice.changepassword(userdto);
+    async changepass(@Body() Memberdto:forgotpassword) {
+        console.log(Memberdto);
+        return this.Authservice.changepassword(Memberdto);
     }
 }

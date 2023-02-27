@@ -12,9 +12,10 @@ import { ProjectModule } from './project/project.module';
 import { TaskModule } from './task/task.module';
 import { TeamModule } from './team/team.module';
 import { AdminModule } from './admin/admin.module';
+import { MemberModule } from './members/member.module';
 
 @Module({
-  imports: [UserModule,AdminModule,ConfigModule.forRoot({isGlobal:true}),MongooseModule.forRoot(process.env.url),AuthModule, DepartmentModule, GoalModule, OrgenizationModule, ProjectModule, TaskModule, TeamModule],
+  imports: [UserModule,MemberModule,AdminModule,ConfigModule.forRoot({isGlobal:true}),MongooseModule.forRoot(process.env.url),AuthModule, DepartmentModule, GoalModule, OrgenizationModule, ProjectModule, TaskModule, TeamModule],
   controllers: [AppController],
   providers: [AppService],
 })

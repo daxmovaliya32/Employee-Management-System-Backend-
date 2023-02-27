@@ -1,7 +1,7 @@
-import { IsString } from "class-validator";
+import { IsString } from "class-validator"
 
-export class filterdto {
-
+export class filterdto
+{
     @IsString()
     name:String
 
