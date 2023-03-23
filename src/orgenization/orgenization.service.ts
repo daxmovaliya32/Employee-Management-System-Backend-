@@ -28,8 +28,11 @@ export class OrgenizationService {
   ){}
   async create(createOrgenizationDto: Organization,req:any) {
     const uniqueId = await idgenrate();
-    console.log((uniqueId));
-    
+    var check = await this.OrganizationModel.findOne({user:req.user._id});
+    if(check)
+    {
+      return {message:"you already added one organization"};
+    }
     const image = await this.cloudinary.uploadImage(createOrgenizationDto.image).catch((error) => {
       console.log(error);
     throw new BadRequestException(error.message);    

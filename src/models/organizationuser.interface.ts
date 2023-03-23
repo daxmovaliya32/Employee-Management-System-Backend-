@@ -29,16 +29,20 @@ export class address {
   zipcode: number;
 }
 
-export type MemberDocument = Member & Document;
-@Schema({ timestamps: true, collection: 'members' })
-export class Member {
+export type orguserDocument = orguser & Document;
+@Schema({ timestamps: true, collection: 'orgusers' })
+export class orguser {
   @Prop()
   @IsNotEmpty()
-  f_name: string;
+  name: string;
 
   @Prop()
   @IsNotEmpty()
-  l_name: string;
+  dob: Date;
+
+  @Prop()
+  @IsNotEmpty()
+  join_date: Date;
 
   @Prop()
   @IsNotEmpty()
@@ -53,7 +57,7 @@ export class Member {
   })
   password: string;
 
-  @Prop({ default: 'Member' })
+  @Prop({ default: 'orguser' })
   role: string;
 
   @Prop()
@@ -61,14 +65,10 @@ export class Member {
   mobile: number;
 
   @Prop({ type: String })
-  @IsNotEmpty()
   image: any;
 
-  @Prop({ default: false })
-  isemailverified: boolean;
-
-  @Prop({ default: false })
-  ismobileverified: boolean;
+  @Prop()
+  orgid: string;
 
   @Prop({ default: false })
   isDeleted: boolean;
@@ -85,5 +85,5 @@ export class Member {
   otp: number;
 }
 
-export const MemberSchema = SchemaFactory.createForClass(Member);
-MemberSchema.plugin(paginate);
+export const orguserSchema = SchemaFactory.createForClass(orguser);
+orguserSchema.plugin(paginate);

@@ -32,3 +32,26 @@ export class verifingotp {
     @IsNotEmpty()
     otp:number;
 }
+
+export class authuser {
+  
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  @MinLength(4)
+  password: string;
+
+}
+
+export class verifydto {
+  
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  otp:number
+
+}

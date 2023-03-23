@@ -1,6 +1,19 @@
-import { IsEmail,IsNotEmpty, IsString, Matches, MinLength } from "class-validator";
+import { Prop } from "@nestjs/mongoose";
+import { IsEmail,IsNotEmpty, IsNumber, IsString, IS_LENGTH, Matches, MaxLength, min, minLength, MinLength } from "class-validator";
 
-export class authMember {
+export class authorguser {
+  
+    @IsNotEmpty()
+    @IsEmail()
+    email: string;
+  
+    @IsNotEmpty()
+    @MinLength(4)
+    password: string;
+  
+  }
+
+  export class authuser {
   
     @IsNotEmpty()
     @IsEmail()
@@ -22,11 +35,10 @@ export class resetpassword {
     newpassword:string;
 }
 
-export class updatemembername {
+export class updateorgusername {
   
-    f_name: string;
-
-    l_name: string; 
+   @IsString() 
+   name: string;
 }
 
 export class verifydto {
@@ -40,6 +52,14 @@ export class verifydto {
   
 }
 
+export class updateprofile {
+  
+    @Prop()
+    image: string;
+      
+}
+
+
 export class filterdto
 {
     @IsString()
@@ -51,3 +71,4 @@ export class filterdto
     @IsString()
      limit:string
 }
+

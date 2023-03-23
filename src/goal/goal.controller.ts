@@ -2,24 +2,24 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards,Request, Q
 import { GoalService } from './goal.service';
 import { UpdateGoalDto } from './dto/update-goal.dto';
 import { Goal } from 'src/models/goal.interface';
-import { RolesGuardadmin } from 'src/guard/roles.guard';
+import { RolesGuarduser } from 'src/guard/roles.guard';
 import { FormDataRequest } from 'nestjs-form-data';
-import { filterdto } from 'src/user/user.dto';
+import { filterdto } from 'src/goal/dto/filter.dto';
 
 @Controller('goal')
 export class GoalController {
   constructor(private readonly goalService: GoalService) {}
 
-  @UseGuards(RolesGuardadmin)
+  @UseGuards(RolesGuarduser)
   @Post('add_goal')
   @FormDataRequest()
-  create(@Request() req:RolesGuardadmin,@Body() createGoalDto:Goal) {
+  create(@Request() req:RolesGuarduser,@Body() createGoalDto:Goal) {
     console.log(createGoalDto.goal_members,createGoalDto.goal_manager);
     
     return this.goalService.create(createGoalDto,req);
   }
 
-  @UseGuards(RolesGuardadmin)
+  @UseGuards(RolesGuarduser)
   @Get()
   findAll(@Query() query:filterdto) {
     return this.goalService.findAll(query);

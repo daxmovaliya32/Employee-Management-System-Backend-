@@ -4,6 +4,7 @@ import {
 } from 'class-validator';
 import mongoose,{ Document } from 'mongoose';
 import * as paginate from 'mongoose-paginate-v2';
+import { orguser } from './organizationuser.interface';
 import { Organization } from './organizaton.interface';
 import { User } from './user.interface';
 
@@ -17,13 +18,13 @@ export class Goal {
   @IsNotEmpty()
   name: string;
 
-  @Prop({type:mongoose.Schema.Types.ObjectId,ref:"User"})
+  @Prop({type:mongoose.Schema.Types.ObjectId,ref:"orguser"})
   @IsNotEmpty()
-  goal_manager:User;
+  goal_manager:orguser;
 
-  @Prop([{type:mongoose.Schema.Types.ObjectId,ref:"User"}])
+  @Prop([{type:mongoose.Schema.Types.ObjectId,ref:"orguser"}])
   @IsNotEmpty()
-  goal_members:User[];
+  goal_members:orguser[];
 
   @Prop({type:mongoose.Schema.Types.ObjectId,ref:"Organization"})
   @IsNotEmpty()

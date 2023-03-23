@@ -8,7 +8,11 @@ enum role {
     PROJECT_MANAGER='Project_Manager',
     TASK_MANAGER='Task_Manager',
     DEPARTMENT_MANAGER='Department_Manager',
-    TEAM_MANAGER='Team_Manager'
+    TEAM_MANAGER='Team_Manager',
+    Goal_MANAGER='Goal_Manager',
+    PROJECT_MEMBER='Project_Member',
+    TASK_MEMBER='Task_Member',
+    GOAL_MEMBER='Goal_Member'
  }
 
 export class authUser {

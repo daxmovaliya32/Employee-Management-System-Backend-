@@ -42,8 +42,11 @@ export class RolesGuarduser implements CanActivate {
         {
             throw new UnauthorizedException('token is not provided');
         }
-    try {
-        const user = this.jwtService.verify(token) 
+        const user = this.jwtService.verify(token); 
+        if(user.subscribe==false)
+        {
+            throw new UnauthorizedException('you are not right person to do this');
+        }
         if(user.role == "User")
         {
           request.user=user
@@ -51,35 +54,32 @@ export class RolesGuarduser implements CanActivate {
         }else{
           throw new UnauthorizedException('you are not right person to do this');
         }
-    } catch (error) {
-      console.log(error); 
-    }
   }
 }
 
-// guard for member
-export class RolesGuardMember implements CanActivate {
+@Injectable()
+export class RolesGuardorguser implements CanActivate {
   constructor(private readonly jwtService:JwtService) {}
 
-  canActivate(context: ExecutionContext):boolean{
-    try {
-      const request = context.switchToHttp().getRequest();
-      const token = request.headers.token;
-      if(!token)
-      {
-          throw new UnauthorizedException('token is not provided');
-      } 
-        const user = this.jwtService.verify(token)
-        request.user=user
-        console.log(user.role);
-        if(user.role=="Member")
+  canActivate(context: ExecutionContext):boolean{ 
+    try{
+    const request = context.switchToHttp().getRequest();
+    const token = request.headers.token;
+        if(!token)
         {
-          return true;
+            throw new UnauthorizedException('token is not provided');
+        }
+   
+        const orguser = this.jwtService.verify(token); 
+        if(orguser.role == "orguser")
+        {
+          request.orguser=orguser
+            return true;
         }else{
-          throw new UnauthorizedException('only Member can perform this action');
+          throw new UnauthorizedException('you are not right person to do this');
         }
     } catch (error) {
-        throw new UnauthorizedException(error.response);  
+      console.log(error); 
     }
   }
 }

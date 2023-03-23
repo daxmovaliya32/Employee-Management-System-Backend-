@@ -1,52 +1,37 @@
 import { Prop,Schema, SchemaFactory } from '@nestjs/mongoose';
 import {
   IsNotEmpty,
-  MinLength,
 } from 'class-validator';
 import mongoose,{ Document } from 'mongoose';
 import * as paginate from 'mongoose-paginate-v2';
+import { orguser } from './organizationuser.interface';
 import { Organization } from './organizaton.interface';
 import { User } from './user.interface';
-
-export class address {
-  @IsNotEmpty()
-  location: string;
-
-  @IsNotEmpty()
-  city: string;
-
-  @IsNotEmpty()
-  state: string;
-
-  @IsNotEmpty()
-  country: string;
-
-  @IsNotEmpty()
-  @MinLength(6)
-  zipcode: number;
-}
 
 export type TaskDocument = Task & Document;
 @Schema({ timestamps: true, collection: 'Task' })
 export class Task {
-  @Prop({type:mongoose.Schema.Types.ObjectId,ref:"users"})
-  @IsNotEmpty()
+  @Prop({type:mongoose.Schema.Types.ObjectId,ref:"User"})
   user:User;
 
   @Prop()
   @IsNotEmpty()
   name: string;
 
-  @Prop({type:mongoose.Schema.Types.ObjectId,ref:"users"})
-  task_manager:User;
+  @Prop({type:mongoose.Schema.Types.ObjectId,ref:"orguser"})
+  @IsNotEmpty()
+  task_manager:orguser;
 
-  @Prop({type:mongoose.Schema.Types.ObjectId,ref:"users"})
-  task_members:User;
+  @Prop([{type:mongoose.Schema.Types.ObjectId,ref:"orguser"}])
+  @IsNotEmpty()
+  task_members:orguser[];
 
   @Prop({type:mongoose.Schema.Types.ObjectId,ref:"Organization"})
+  @IsNotEmpty()
   org_id:Organization;
 
   @Prop()
+  @IsNotEmpty()
   desc: string;
 
   @Prop({ type: String })

@@ -2,30 +2,34 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { encryptpassword, verifypassword } from '../helper/password.helper';
 import { Model } from 'mongoose';
-import { Member, MemberDocument } from 'src/models/Member.interface';
+import { User, UserDocument } from 'src/models/user.interface';
 import { JwtService } from '@nestjs/jwt';
 import { CloudinaryService } from 'src/helper/cloudinary/cloudinary.service';
 const otpGenerator = require('otp-generator')
 import * as dotenv from 'dotenv';
 import { sendMail } from './sendmail';
-import { verifydto } from 'src/members/member.dto';
+import { verifydto } from 'src/user/user.dto';
 import { emailforsendotp, forgotpassword, verifingotp } from './auth.dto';
+import { InjectStripe } from 'nestjs-stripe';
+import Stripe from 'stripe';
 
 dotenv.config(); 
 
 @Injectable()
 export class AuthService {
     constructor(
-        @InjectModel('Member') private readonly MemberModel:Model<MemberDocument>,
+        @InjectModel('User') private readonly userModel:Model<UserDocument>,
         private readonly jwtService:JwtService,
-        private readonly cloudinary: CloudinaryService
+        private readonly cloudinary: CloudinaryService,
+        @InjectStripe() private readonly stripeClient: Stripe
     ){}
 
-    //for login Member
-    async signinMember(email:string,password:string)
+    //for login user
+    async signinuser(email:string,password:string)
     {
-        try{      
-            const check = await this.MemberModel.findOne({email:email});
+        try{   
+            let check;   
+            check = await this.userModel.findOne({email:email});
             if(!check)
             {
                 return {message:"email not exist in database"}
@@ -39,7 +43,7 @@ export class AuthService {
             }
 
             const token = this.jwtService.sign(JSON.stringify(check))
-            return {Member:check.email,access_token:token};
+            return {user:check.email,access_token:token};
         
         } catch (error) {
             console.log(error);
@@ -47,94 +51,97 @@ export class AuthService {
         }
    }
 
-   //for register Member
-   async signupMember(Member:Member)
+   //for register user
+   async signupuser(user:User)
    {  
-       const emailexist =await this.MemberModel.findOne({email:Member.email,isemailverified:true});
+       const emailexist =await this.userModel.findOne({email:user.email,isemailverified:true});
        if(emailexist)
        {
           return{ message: "this email is already exist"}    
        }
 
         const otp = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false,lowerCaseAlphabets: false});
-    //    sendMail(Member.email,otp);
-       const response=await this.cloudinary.uploadImage(Member.image).catch((error) => {
+       sendMail(user.email,otp);
+       const response=await this.cloudinary.uploadImage(user.image).catch((error) => {
        throw new BadRequestException(error.message);
     });
-      
-       const pass = await encryptpassword(Member.password)
-           const newMember = new this.MemberModel({
-               f_name:Member.f_name,
-               l_name:Member.l_name,
-               email:Member.email,
+
+      const email=user.email;
+      const name=user.f_name;
+      var cid;
+      await this.stripeClient.customers.create({email,name}).then((customers)=>{cid=customers.id}).catch((error)=>{
+        console.log(error);
+      });
+
+       const pass = await encryptpassword(user.password)
+           const newuser = new this.userModel({
+               f_name:user.f_name,
+               l_name:user.l_name,
+               email:user.email,
                password:pass,
-               mobile:Member.mobile,
+               mobile:user.mobile,
                image:response.secure_url,   
                otp:otp,
+               customerid:cid,
                address:{
-                location:Member.address.location,
-                city:Member.address.city,
-                state:Member.address.state,
-                country:Member.address.country,
-                zipcode:Member.address.zipcode
+                location:user.address.location,
+                city:user.address.city,
+                state:user.address.state,
+                country:user.address.country,
+                zipcode:user.address.zipcode
                }
            });
-           return newMember.save();
+           return newuser.save();
    }
 
    async verify(data:verifydto)
    {
-       const findMember = await this.MemberModel.findOne({email:data.email,isemailverified:false,isDeleted:false});
-       if(findMember.otp != data.otp)
+       const finduser = await this.userModel.findOne({email:data.email,isemailverified:false,isDeleted:false});
+       if(finduser.otp != data.otp)
        {
         return {message:"otp does not match please enter valid otp"}
        }
-       await this.MemberModel.findByIdAndUpdate({_id:findMember._id},{isemailverified:true},{new:true});
+       await this.userModel.findByIdAndUpdate({_id:finduser._id},{isemailverified:true},{new:true});
 
-       return {message:"your email is verified you can login now"}
-   }
+       return {message:"your email is verified you can login now"}    
+   }  
 
-   async findemailandsaveotp(Memberdto:emailforsendotp)
+   async findemailandsaveotp(userdto:emailforsendotp)
    {
     const otp = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false,lowerCaseAlphabets: false});
-       sendMail(Memberdto.email,otp);
-       const Member = await this.MemberModel.findOne({email:Memberdto.email,isemailverified:true,isDeleted:false})
-       return await this.MemberModel.findByIdAndUpdate({_id:Member._id},{otp:otp},{new:true});
-
+       sendMail(userdto.email,otp);
+       const user = await this.userModel.findOne({email:userdto.email,isemailverified:true,isDeleted:false})
+       return await this.userModel.findByIdAndUpdate({_id:user._id},{otp:otp},{new:true});
    }
 
-   async otpverificationforforgotpassword(Memberdto:verifingotp)
+   async otpverificationforforgotpassword(userdto:verifingotp)
    {
-       const findMember = await this.MemberModel.findOne({email:Memberdto.email,isemailverified:true,isDeleted:false});
-       if(findMember.otp != Memberdto.otp)
+       const finduser = await this.userModel.findOne({email:userdto.email,isemailverified:true,isDeleted:false});
+       if(finduser.otp != userdto.otp)
        {
         return {message:"otp does not match please enter valid otp"}
        }
        return {message:"successs...."}
    }
 
-   async changepassword(Memberdto:forgotpassword)
+   async changepassword(userdto:forgotpassword)
    {
        try {
-           const Memberdata = await this.MemberModel.findOne({email:Memberdto.email,isDeleted:false,isemailverified:true});
-           if(!Memberdata)
+           const userdata = await this.userModel.findOne({email:userdto.email,isDeleted:false,isemailverified:true});
+           if(!userdata)
            {
-               return {message:"Member not found..."}
+               return {message:"user not found..."}
            }
-           if(Memberdto.confirmnewpassword != Memberdto.newpassword)
+           if(userdto.confirmnewpassword != userdto.newpassword)
            {
                return {message:"new password and confirm new password is not same please enter same password"}
            }
-           const bcryptpass = await encryptpassword(Memberdto.newpassword);
+           const bcryptpass = await encryptpassword(userdto.newpassword);
           
-           return this.MemberModel.findByIdAndUpdate({_id:Memberdata._id},{password:bcryptpass},{new:true});
+           return this.userModel.findByIdAndUpdate({_id:userdata._id},{password:bcryptpass},{new:true});
        } 
        catch (error) {
         return {message:error.message}
        }
-   }
-
-
-
-   
+   } 
 }

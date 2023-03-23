@@ -1,4 +1,4 @@
-import { IsEmail,IsNotEmpty, IsString, Matches, MinLength } from "class-validator";
+import { IsEmail,IsNotEmpty, IsNumber, IsString, Matches, MaxLength, MinLength } from "class-validator";
 
 export class authUser {
   
@@ -23,9 +23,11 @@ export class resetpassword {
 }
 
 export class updateusername {
-  
+
+    @IsString()
     f_name: string;
 
+    @IsString()
     l_name: string; 
 }
 
@@ -50,4 +52,20 @@ export class filterdto
     
     @IsString()
      limit:string
+}
+
+export class carddto
+{
+    @IsNotEmpty()
+    number:number
+    
+    @IsNotEmpty()
+    exp_month:number
+
+    @IsNotEmpty()
+    exp_year:number
+
+    @MinLength(3)
+    @MaxLength(3)
+    cvc:string
 }

@@ -53,7 +53,7 @@ export class User {
   })
   password: string;
 
-  @Prop({ default: 'User' })
+  @Prop({default:"User"})
   role: string;
 
   @Prop()
@@ -75,6 +75,12 @@ export class User {
 
   @Prop({ default: 1 })
   status: boolean;
+
+  @Prop()
+  customerid: string;
+
+  @Prop({default:false})
+  subscribe: boolean;
 
   @Prop({type:address})
   @ValidateNested({ each: true })

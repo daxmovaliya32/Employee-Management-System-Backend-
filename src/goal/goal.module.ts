@@ -7,9 +7,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { GoalSchema } from 'src/models/goal.interface';
 import { JwtModule } from '@nestjs/jwt';
 import { OrganizationSchema } from 'src/models/organizaton.interface';
+import { orguserSchema } from 'src/models/organizationuser.interface';
 
 @Module({
-  imports:[CloudinaryModule,NestjsFormDataModule,MongooseModule.forFeature([{name:'Goal',schema:GoalSchema}]),MongooseModule.forFeature([{name:'Organization',schema:OrganizationSchema}]),JwtModule.register({
+  imports:[CloudinaryModule,NestjsFormDataModule,MongooseModule.forFeature([{name:'Goal',schema:GoalSchema}]),MongooseModule.forFeature([{name:'Organization',schema:OrganizationSchema}]),MongooseModule.forFeature([{name:'orguser',schema:orguserSchema}]),JwtModule.register({
     secret:process.env.jwtsecret,
 })],
   controllers: [GoalController],

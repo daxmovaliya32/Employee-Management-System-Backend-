@@ -2,40 +2,39 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards,Request, Q
 import { OrgenizationService } from './orgenization.service';
 import { Organization } from 'src/models/organizaton.interface';
 import { FormDataRequest } from 'nestjs-form-data';
-import { RolesGuardadmin } from 'src/guard/roles.guard';
-import { query } from 'express';
+import { RolesGuarduser } from 'src/guard/roles.guard';
 import { filterdto } from 'src/user/user.dto';
 
 @Controller('orgenization')
 export class OrgenizationController {
   constructor(private readonly orgenizationService: OrgenizationService) {}
 
-  @UseGuards(RolesGuardadmin)
+  @UseGuards(RolesGuarduser)
   @Post('creation')
   @FormDataRequest()
-  create(@Request() req:RolesGuardadmin,@Body() createOrgenizationDto: Organization) {
+  create(@Request() req:RolesGuarduser,@Body() createOrgenizationDto: Organization) {
     return this.orgenizationService.create(createOrgenizationDto,req);
   }
 
-  @UseGuards(RolesGuardadmin)
+  @UseGuards(RolesGuarduser)
   @Get('findall')
   findAll(@Query() query:filterdto) {
     return this.orgenizationService.findall(query);
   }
 
-  @UseGuards(RolesGuardadmin)
+  @UseGuards(RolesGuarduser)
   @Get('findbyid/:id')
   findOne(@Param('id') id: string) {
     return this.orgenizationService.findbyid(id);
   }
 
-  @UseGuards(RolesGuardadmin)
+  @UseGuards(RolesGuarduser)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateOrgenizationDto: any) {
     return this.orgenizationService.update(+id, updateOrgenizationDto);
   }
 
-  @UseGuards(RolesGuardadmin)
+  @UseGuards(RolesGuarduser)
   @Delete('deleteorg/:id')
   remove(@Param('id') id: string) {
     return this.orgenizationService.remove(id);

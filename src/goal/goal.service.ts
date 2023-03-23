@@ -5,6 +5,7 @@ import { Model, PaginateModel } from 'mongoose';
 import { RolesGuardadmin } from 'src/guard/roles.guard';
 import { CloudinaryService } from 'src/helper/cloudinary/cloudinary.service';
 import { Goal, GoalDocument } from 'src/models/goal.interface';
+import { orguser, orguserDocument } from 'src/models/organizationuser.interface';
 import { Organization, OrganizationDocument } from 'src/models/organizaton.interface';
 import { User, UserDocument } from 'src/models/user.interface';
 import { filterdto } from 'src/user/user.dto';
@@ -27,6 +28,7 @@ export class GoalService {
   constructor(
     @InjectModel(Goal.name) private readonly GoalModel:Model<GoalDocument>,
     @InjectModel(Organization.name) private readonly orgmodel:Model<OrganizationDocument>,
+    @InjectModel(orguser.name) private readonly orgusermodel:Model<orguserDocument>,
     @InjectModel(Goal.name) private readonly Goalmodelpag:PaginateModel<GoalDocument>,
     private readonly cloudinary:CloudinaryService
   ){}
@@ -46,6 +48,10 @@ export class GoalService {
            image:image.secure_url,
            desc:createGoalDto.desc,
            progress:createGoalDto.progress
+      })
+      await this.orgusermodel.findByIdAndUpdate({_id:createGoalDto.goal_manager},{role:"Goal_Manager"});
+      createGoalDto.goal_members.forEach(async(ele)=>{
+        await this.orgusermodel.findByIdAndUpdate({_id:ele},{role:"Goal_Member"})
       })
       return goaldata.save();
   }
