@@ -6,6 +6,7 @@ import { Task, TaskDocument } from 'src/models/Task.interface';
 import { orguser, orguserDocument } from 'src/models/organizationuser.interface';
 import { Organization, OrganizationDocument } from 'src/models/organizaton.interface';
 import { filterdto } from './dto/filter.dto';
+import { isEmpty } from 'class-validator';
 
 const myCustomLabels = {
   totalDocs: 'itemCount',
@@ -34,23 +35,60 @@ export class TaskService {
         console.log(error);
         throw new BadRequestException(error.message);    
       })
-      const org = await this.orgmodel.findOne({org_id:createTaskDto.org_id});
-      console.log(createTaskDto.task_manager,createTaskDto.task_members);
-      console.log(createTaskDto.task_members);
+      var val=createTaskDto.task_orgusers;
       
-      const Taskdata = new this.TaskModel({
-           user:request.user._id,
-           name:createTaskDto.name,
-           task_manager:createTaskDto.task_manager,
-           task_orgusers:createTaskDto.task_members,
-           org_id:org._id,
-           image:image.secure_url,
-           desc:createTaskDto.desc,
-      })
-      await this.orgusermodel.findByIdAndUpdate({_id:createTaskDto.task_manager},{role:"Task_Manager"});
-      createTaskDto.task_members.forEach(async(ele)=>{
+      const org = await this.orgmodel.findOne({org_id:createTaskDto.org_id});
+      var Taskdata;
+      
+      if(val==null && createTaskDto.task_manager==null)
+      {
+        Taskdata = new this.TaskModel({
+          user:request.user._id,
+          name:createTaskDto.name,
+          org_id:org._id,
+          image:image.secure_url,
+          desc:createTaskDto.desc,
+     })
+      }else if(val== null)
+      {
+        Taskdata = new this.TaskModel({
+          user:request.user._id,
+          name:createTaskDto.name,
+          task_manager:createTaskDto.task_manager,
+          org_id:org._id,
+          image:image.secure_url,
+          desc:createTaskDto.desc,
+     })
+     await this.orgusermodel.findByIdAndUpdate({_id:createTaskDto.task_manager},{role:"Task_Manager"});
+      }else if(createTaskDto.task_manager==null)
+      {
+        Taskdata = new this.TaskModel({
+          user:request.user._id,
+          name:createTaskDto.name,
+          task_orgusers:createTaskDto.task_orgusers,
+          org_id:org._id,
+          image:image.secure_url,
+          desc:createTaskDto.desc,
+     })
+      createTaskDto.task_orgusers.forEach(async(ele)=>{
         await this.orgusermodel.findByIdAndUpdate({_id:ele},{role:"Task_orguser"})
       })
+      }else{
+        Taskdata = new this.TaskModel({
+          user:request.user._id,
+          name:createTaskDto.name,
+          task_manager:createTaskDto.task_manager,
+          task_orgusers:createTaskDto.task_orgusers,
+          org_id:org._id,
+          image:image.secure_url,
+          desc:createTaskDto.desc,
+     })
+     await this.orgusermodel.findByIdAndUpdate({_id:createTaskDto.task_manager},{role:"Task_Manager"});
+      createTaskDto.task_orgusers.forEach(async(ele)=>{
+        await this.orgusermodel.findByIdAndUpdate({_id:ele},{role:"Task_orguser"})
+      })
+      }
+      
       return Taskdata.save();
   }
   

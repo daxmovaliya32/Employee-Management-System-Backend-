@@ -14,8 +14,6 @@ export class GoalController {
   @Post('add_goal')
   @FormDataRequest()
   create(@Request() req:RolesGuarduser,@Body() createGoalDto:Goal) {
-    console.log(createGoalDto.goal_members,createGoalDto.goal_manager);
-    
     return this.goalService.create(createGoalDto,req);
   }
 

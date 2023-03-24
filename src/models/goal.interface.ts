@@ -1,6 +1,6 @@
 import { Prop,Schema, SchemaFactory } from '@nestjs/mongoose';
 import {
-  IsNotEmpty,
+  IsNotEmpty, IsOptional,
 } from 'class-validator';
 import mongoose,{ Document } from 'mongoose';
 import * as paginate from 'mongoose-paginate-v2';
@@ -19,12 +19,12 @@ export class Goal {
   name: string;
 
   @Prop({type:mongoose.Schema.Types.ObjectId,ref:"orguser"})
-  @IsNotEmpty()
+  @IsOptional()
   goal_manager:orguser;
 
   @Prop([{type:mongoose.Schema.Types.ObjectId,ref:"orguser"}])
-  @IsNotEmpty()
-  goal_members:orguser[];
+  @IsOptional()
+  goal_orgusers:orguser[];
 
   @Prop({type:mongoose.Schema.Types.ObjectId,ref:"Organization"})
   @IsNotEmpty()
